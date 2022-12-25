@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Форма авторизации</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.querySelector("#form-login");
+
+        if (loginForm) {
+          loginForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const email = loginForm.querySelector(".form-input-email").value;
+            const password = loginForm.querySelector(
+              ".form-input-password"
+            ).value;
+
+            fetch("http://localhost:3000/api/auth/login", {
+              method: "POST",
+              body: JSON.stringify({
+                email: email,
+                password: password,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+              .then((data) => {
+                if(data.status === 401) return null;
+                return data.json();
+              })
+              .then((data) => {
+                console.log(data);
+                if (data && data.token) {
+                  localStorage.setItem('user', JSON.stringify(data));
+                  localStorage.setItem('token', data.token);
+                  window.location.href = '/';
+                } else {
+                  alert("Неправильная пара e-mail/пароль");
+                  localStorage.removeItem('user');
+                  localStorage.removeItem('token');
+                }
+              });
+          });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container-auth">
+      <h1>Форма авторизации</h1>
+      <form
+        class="form form-auth"
+        id="form-login"
+        method="post"
+        action="/api/auth/login"
+      >
+        <div class="form-row">
+          <input
+            type="text"
+            class="form-input-email"
+            placeholder="E-mail"
+            required
+          />
+        </div>
+        <div class="form-row">
+          <input type="password" class="form-input-password" placeholder="Пароль" />
+        </div>
+        <div class="form-row">
+          <input type="submit" value="Войти" />
+        </div>
+      </form>
+      <ul class="container-links">
+        <li><a href="/">Мои проекты</a></li>
+        <li><a href="/registration.html">Зарегистрироваться</a></li>
+      </ul>
+    </div>
+  </body>
+</html>

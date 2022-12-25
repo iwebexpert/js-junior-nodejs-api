@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Выход</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        setTimeout(() => {
+          window.location.href = '/login.html';
+        }, 5000);
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container-auth">
+      <h1>Выход</h1>
+      <p>Вы будете перенаправлены на страницу авторизации через 5 секунд. Вы, также, можете сами перейти на страницу авторизации по ссылке ниже</p>
+      <ul class="container-links">
+        <li><a href="/">Мои проекты</a></li>
+        <li><a href="/login.html">Авторизация</a></li>
+      </ul>
+    </div>
+  </body>
+</html>

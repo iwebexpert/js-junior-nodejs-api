@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Проекты</title>
+  <link rel="stylesheet" href="./style.css">
+  <script>
+    isAuth();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.querySelector('.container');
+      const form = document.getElementById('form');
+      const editFormContainer = document.querySelector('.edit-form-container');
+
+      if(editFormContainer){
+        hideShowEditFormContainer();
+
+        editFormContainer.firstElementChild.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const target = event.target;
+          const method = target.getAttribute('method').toUpperCase();
+
+          const id = target.querySelector('.form-input-id').value;
+          const name = target.querySelector('.form-input-name').value;
+          const title = target.querySelector('.form-input-title').value;
+
+          const item = {id, name, title};
+
+          updateProject(item, method, container);
+        });
+
+        editFormContainer.querySelector('.form-btn-reset').addEventListener('click', () => {
+          hideShowEditFormContainer('add');
+        });
+      }
+
+      if(container){
+        fetchProjects(container);
+
+        container.addEventListener('click', (event) => {
+          let target = event.target;
+          
+          if(target.tagName != 'SPAN') return;
+          if(target.classList.contains('delete-project')){
+            // console.log(target);
+            target.parentElement.remove();
+            deleteProject(target.dataset.id);
+          }
+
+          if(editFormContainer && 
+          (target.classList.contains('edit-project-put') || target.classList.contains('edit-project-patch'))){
+            const method = target.classList.contains('edit-project-put') ? 'put' : 'patch';
+            const id = editFormContainer.querySelector('.form-input-id');
+            id.value = target.dataset.id;
+            id.disabled = method === 'patch';
+
+            editFormContainer.querySelector('.form-input-name').value = target.dataset.name;
+            editFormContainer.querySelector('.form-input-title').value = target.dataset.title;
+            editFormContainer.firstElementChild.setAttribute('method', method);
+            hideShowEditFormContainer('remove');
+          }
+        });
+      }
+
+      if(form){
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const title = event.target.querySelector('.form-input-project').value;
+          createNewProject(title, container);
+        });
+      }
+    });
+
+    function fetchProjects(container){
+      fetch('http://localhost:3000/api/projects', {
+        method: 'GET',
+        headers: getHeaders(),
+      })
+      .then((data) => data.json())
+      .then((data) => {
+        // console.log(data);
+        for(let i = 0; i < data.length; i++){
+          let item = document.createElement('div');
+          item.innerHTML = i+1 + '. ' + data[i].title + ` <span class="delete-project" data-id="${data[i]._id}">Удалить</span> | 
+          <span class="edit-project-put" data-id="${data[i]._id}" data-name="${data[i].name}" data-title="${data[i].title}">Редактировать (PUT)</span> | 
+          <span class="edit-project-patch" data-id="${data[i]._id}" data-name="${data[i].name}" data-title="${data[i].title}">Редактировать (PATCH)</span>`;
+          container.appendChild(item);
+        }
+      });
+    }
+
+    function clearListOfProjects(container){
+      container.textContent = '';
+    }
+
+    function createNewProject(title, container){
+      fetch('http://localhost:3000/api/projects', {
+        method: 'POST',
+        body: JSON.stringify({title: title}),
+        headers: getHeaders(),
+      })
+      .then((data) => data.json())
+      .then((data) => {
+        // console.log(data);
+        if(data && data.result){
+          clearListOfProjects(container);
+          fetchProjects(container);
+        } else {
+          alert('Проект не был добавлен!');
+        }
+      });
+    }
+
+    function deleteProject(id){
+      fetch(`http://localhost:3000/api/projects/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+    }
+
+    function updateProject(item, method, container){
+      fetch(`http://localhost:3000/api/projects/${item.id}`, {
+        method: method,
+        body: JSON.stringify(item),
+        headers: getHeaders(),
+      })
+      .then((res) => {
+        if(res.status === 204){
+          return '204';
+        }
+        if(res.status === 201){
+          return res.headers.get('Location');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+          clearListOfProjects(container);
+          fetchProjects(container);
+          hideShowEditFormContainer();
+      });
+    }
+
+    function hideShowEditFormContainer(action = 'toggle'){
+      const editFormContainer = document.querySelector('.edit-form-container');
+      const className = 'edit-form-container-hidden';
+      if(editFormContainer){
+        switch(action)
+        {
+          case 'add': editFormContainer.classList.add(className);
+          break;
+          case 'remove': editFormContainer.classList.remove(className);
+          break;
+          default:
+          editFormContainer.classList.toggle(className);
+        }
+      }
+    }
+
+    function getHeaders(){
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      if(localStorage.getItem('token')){
+        headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
+      }
+      return headers;
+    }
+
+    function isAuth(){
+      if(!localStorage.getItem('token')){
+        alert('Для просмотра страницы необходимо авторизоваться');
+        window.location.href = '/login.html';
+      }
+      return true;
+    }
+  </script>
+</head>
+<body>
+  <div class="container-main">
+    <h1>Проекты</h1>
+    <div class="container"></div>
+    <div class="edit-form-container">
+      <form class="form" id="form-edit" method="put" action="#">
+        <div class="form-row">
+          <input type="text" class="form-input-id" placeholder="Введите Id проекта">
+        </div>
+        <div class="form-row">
+          <input type="text" class="form-input-name" placeholder="Введите имя пользователя">
+        </div>
+        <div class="form-row">
+          <input type="text" class="form-input-title" placeholder="Введите название проекта">
+        </div>
+        <div class="form-row">
+          <input type="submit" value="Сохранить">
+        </div>
+        <div class="form-row">
+          <input type="button" class="form-btn-reset" value="Отменить редактирование">
+        </div>
+      </form>
+    </div>
+  
+  
+    <form class="form" id="form" method="post" action="/api/projects">
+      <div class="form-row">
+        <input type="text" class="form-input-project" placeholder="Введите название нового проекта">
+      </div>
+      <div class="form-row">
+        <input type="submit" value="Создать проект">
+      </div>
+    </form>
+    <ul class="container-links">
+      <li><a href="/logout.html">Выход</a></li>
+    </ul>
+  </div>
+</body>
+</html>

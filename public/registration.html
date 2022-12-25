@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.querySelector("#form-registration");
+
+        if (loginForm) {
+          loginForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const email = loginForm.querySelector(".form-input-email").value;
+            const firstname = loginForm.querySelector(
+              ".form-input-firstname"
+            ).value;
+            const lastname = loginForm.querySelector(
+              ".form-input-lastname"
+            ).value;
+            const password = loginForm.querySelector(
+              ".form-input-password"
+            ).value;
+            const repassword = loginForm.querySelector(
+              ".form-input-repassword"
+            ).value;
+
+            fetch("http://localhost:3000/api/auth/registration", {
+              method: "POST",
+              body: JSON.stringify({
+                email: email,
+                password: password,
+                repassword: repassword,
+                firstname: firstname,
+                lastname: lastname,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+              .then((data) => data.json())
+              .then((data) => {
+                // console.log(data);
+                if (data && data.message) {
+                  alert(data.message);
+                } else if (data && data.email) {
+                  alert(
+                    "Успешная регистрация. Вы будете перенаправлены на страницу авторизации"
+                  );
+                  window.location.href = '/login.html';
+                } else {
+                  alert("Ошибка на стороне сервера");
+                }
+              });
+          });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container-auth">
+      <h1>Регистрация</h1>
+      <form
+        class="form form-auth"
+        id="form-registration"
+        method="post"
+        action="/api/auth/registration"
+      >
+        <div class="form-row">
+          <input
+            type="text"
+            class="form-input-email"
+            placeholder="E-mail"
+            required
+          />
+        </div>
+        <div class="form-row">
+          <input type="text" class="form-input-firstname" placeholder="Имя" />
+        </div>
+        <div class="form-row">
+          <input
+            type="text"
+            class="form-input-lastname"
+            placeholder="Фамилия"
+          />
+        </div>
+        <div class="form-row">
+          <input type="password" class="form-input-password" placeholder="Пароль" />
+        </div>
+        <div class="form-row">
+          <input
+            type="password"
+            class="form-input-repassword"
+            placeholder="Повторение пароля"
+          />
+        </div>
+        <div class="form-row">
+          <input type="submit" value="Зарегистрироваться" />
+        </div>
+      </form>
+      <ul class="container-links">
+        <li><a href="/login.html">У меня уже есть аккаунт</a></li>
+      </ul>
+    </div>
+  </body>
+</html>

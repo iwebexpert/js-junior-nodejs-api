@@ -1,0 +1,38 @@
+{
+  "name": "js-junior-nodejs-api",
+  "version": "1.0.0",
+  "description": "API using Node.js, Express.js and MongoDB",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "debug": "DEBUG=express:* nodemon app.js",
+    "debug-win": "set DEBUG=express:* & nodemon app.js"
+  },
+  "keywords": [],
+  "author": "Igor Filimonov",
+  "license": "MIT",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/iwebexpert/js-junior-nodejs-api/issues"
+  },
+  "homepage": "https://github.com/iwebexpert/js-junior-nodejs-api#readme",
+  "dependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.8.0",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

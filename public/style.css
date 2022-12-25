@@ -1,0 +1,64 @@
+h1 {
+  color: brown;
+}
+
+.form {
+  width: 50%;
+  margin-top: 30px;
+}
+
+.form-row {
+  margin-bottom: 10px;
+}
+
+.form-row input {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.delete-project,
+.edit-project-put,
+.edit-project-patch
+{
+  color: blue;
+  border-bottom: 1px dotted blue;
+  cursor: pointer;
+}
+
+.edit-form-container-hidden {
+  display: none;
+}
+
+.container-main {
+  width: 800px;
+  margin: 0 auto;
+}
+
+/* Auth */
+.container-auth {
+  width: 400px;
+  margin: 0 auto;
+}
+
+.form-auth {
+  width: 100%;
+}
+
+.container-links {
+  list-style-type: none;
+  font-size: 1.2em;
+  padding-left: 10px;
+}
+
+.container-links li {
+  margin-bottom: 10px;
+}
+
+.container-links a {
+  color: brown;
+}
+
+.container-links a:hover {
+  text-decoration: none;
+}
